@@ -2,9 +2,9 @@
 """
 Created on Mon Nov 23 18:37:46 2020
 
-@author: santi
+@author: Lonch
 """
-import pygame, sys, ss
+import pygame, sys
 from pygame.locals import *
 pygame.init()
 
