@@ -8,34 +8,39 @@ import pygame, sys, Animaciones,random
 from pygame.locals import *
 pygame.init()
 
+def drawLifeBar():
 
-
-
-global x1 #Variables que se utiliza para marcar puntos de vida
-health = 500 #Se hacen globales dado a que se utiliza en todo el codigo
-
-global x2 
-x2 = 500
-
-def battle(player1, player2, screen): #Se define la funcion que tiene todo el juego con dos argumentos de entrada
-                              #Los argumentos son objetos siendo los personajes de ambos jugadoes 
-                              
-    
+    LifeElments = list()
     #Las variables a,b,c,d son las imágenes de la barra de vida, siendo a,c la parte de afuera 
-    #y b,c las que se modifican para ver la vida restante
-    a1 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_roja_1.png")
-    a = pygame.transform.scale(a1, (500, 100))
+    #y b,d las que se modifican para ver la vida restante
+    barraVidaBackgroundP1 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_roja_1.png")
+    barraVidaBackgroundP1 = pygame.transform.scale(barraVidaBackgroundP1, (500, 100))
     
-    b = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_verde_1.png")
+    barraVidaForegroundP1 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_verde_1.png")
     
-    c1 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_roja_2.png")
-    c = pygame.transform.scale(c1, (500, 100))
+    barraVidaBackgroundP2 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_roja_2.png")
+    barraVidaBackgroundP2 = pygame.transform.scale(barraVidaBackgroundP2, (500, 100))
     
-    d = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_verde_2.png")
+    barraVidaForegroundP2 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_verde_2.png")
     
     corazon1 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Corazon_1.png")
     corazon = pygame.transform.scale(corazon1, (500, 100))
     corazon2 = pygame.transform.scale(corazon1, (500, 100))
+
+    LifeElments.append(barraVidaBackgroundP1)
+    LifeElments.append(barraVidaForegroundP1)
+
+    LifeElments.append(barraVidaBackgroundP2)
+    LifeElments.append(barraVidaForegroundP2)
+
+    return LifeElments 
+
+
+
+
+def battle(player1, player2, screen): #Se define la funcion que tiene todo el juego con dos argumentos de entrada
+                              #Los argumentos son objetos siendo los personajes de ambos jugadoes 
+ 
     
     #Imagenes que demarcan las opciones/controles del jugador 1
     C_1 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Boton_Q.png")
@@ -100,30 +105,28 @@ def battle(player1, player2, screen): #Se define la funcion que tiene todo el ju
         #Fin del juego     
         #Se usan las variables globales x1 y x2 para determinar el fin del juego
         #La primera x que sea menor o igual a 50 juega una animación final y acaba el juego               
-        if health <= 100 or x2 <= 100:
+        if player1.health <= 100 or player2.health <= 100:
             
             game_on = False  
             
             
-        #Se ponen los "asets"  del juego, siendo las barras de vida y los personajes    
+        #Se ponen los "assets"  del juego, siendo las barras de vida y los personajes    
         screen.blit(fondo_pelea, (0,0))        
         
-        b = pygame.transform.scale(b,(health,100)) #Se usan las variables globales para determinar la escala en x
-        d = pygame.transform.scale(d,(x2,100)) #Esta es la barra que decrece cada ves que alguno pierde vida 
+        barraVidaForegroundP1 = pygame.transform.scale(barraVidaForegroundP1,(player1.health,100)) #Se usan las variables globales para determinar la escala en x
+        barraVidaForegroundP2 = pygame.transform.scale(barraVidaForegroundP2,(player2.health,100)) #Esta es la barra que decrece cada ves que alguno pierde vida 
         
-        screen.blit(a, (51,100)) #se muestran barras de vida 
-        screen.blit(b, (51,100))
-        screen.blit(c, (1391,100))
-        screen.blit(d, (1391,100))
+        screen.blit(barraVidaBackgroundP1, (51,100)) #se muestran barras de vida 
+        screen.blit(barraVidaForegroundP1, (51,100))
+        screen.blit(barraVidaBackgroundP2, (1391,100))
+        screen.blit(barraVidaForegroundP2, (1391,100))
         
         screen.blit(corazon, (51,100))
         screen.blit(corazon2, (1391,100))
         
         screen.blit(player1.sprite, (550, 370)) #Se muestran los jugadores
         
-        imagen_vol = pygame.transform.flip(player2.sprite, True, False)
-        
-        screen.blit(imagen_vol, (1340,360))
+        screen.blit(player2.reversedSprite, (1340,360))
         
         
         if turno: #Turno del jugador 1
@@ -141,28 +144,20 @@ def battle(player1, player2, screen): #Se define la funcion que tiene todo el ju
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_q:    #Elije el ataque especial 
-                        A1 = 1 
-                        pygame.mixer.Sound.play(botton_ataque)
-                        turno = False
-                        
+                        A1 = 1                   
                     elif event.key == K_w:   #Elije el ataque básico 
-                        A1 = 2
-                        pygame.mixer.Sound.play(botton_ataque)
-                        turno = False    
-                           
+                        A1 = 2                        
                     elif event.key == K_e:  #Elije defensa
-                        A1 = 3
-                        pygame.mixer.Sound.play(botton_ataque)
-                        turno = False
-                        
+                        A1 = 3                      
                     elif event.key == K_r:   #Elije Chance time 
                         A1 = 4   
-                        pygame.mixer.Sound.play(botton_ataque)
-                        turno = False 
+                    pygame.mixer.Sound.play(botton_ataque)
+                    turno = False 
 
             
         
-        if turno == False: #Turno del jugador 
+        if not turno: #Turno del jugador 2
+
         
             jugador2 = letra_jugadores.render("Turno del jugador 2", True, (255, 255, 255))
             screen.blit(jugador2, (1350,25))
@@ -179,23 +174,15 @@ def battle(player1, player2, screen): #Se define la funcion que tiene todo el ju
                 if event.type == KEYDOWN:
                     if event.key == K_u:  #Elije el ataque especial 
                         A2 = 1
-                        pygame.mixer.Sound.play(botton_ataque)
-                        pelea = True
-                        
                     elif event.key == K_i: #Elije el ataque básico 
                         A2 = 2
-                        pygame.mixer.Sound.play(botton_ataque)
-                        pelea = True
-                        
                     elif event.key ==K_o:  #Elije defensa
-                        A2 = 3
-                        pygame.mixer.Sound.play(botton_ataque)
-                        pelea = True
-                        
+                        A2 = 3                        
                     elif event.key == K_p: #Elije Chance time 
                         A2 = 4 
-                        pygame.mixer.Sound.play(botton_ataque)
-                        pelea = True
+                    pygame.mixer.Sound.play(botton_ataque)
+                    pelea = True
+                        
          
         
             
@@ -206,145 +193,86 @@ def battle(player1, player2, screen): #Se define la funcion que tiene todo el ju
                    #cuando el jugador 2 elije a, se compara con las cuatro posibilidades que
                    #tiene el jugador 1 para elejir
         
-        
-        
             if A2 == 1 and A1 == 1:
-                Animaciones.AtaqueS1(player1,player2,a,b,c,d,corazon,corazon2,C1,C5,screen) #Cada bloque es similar, invocan las funciones relacionadas
-                Special1(player1,player2)                      #con las desiciones de cada jugado, luego se reinician cada variable
+                Animaciones.AtaqueS1(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C1,C5,screen) #Cada bloque es similar, invocan las funciones relacionadas
+                Special(player1,player2)                      #con las desiciones de cada jugado, luego se reinician cada variable
                 
-                Animaciones.AtaqueS2(player1,player2,a,b,c,d,corazon,corazon2,C1,C5,screen) #para que vuelva a repetirse cada proceso.
-                Special2(player1,player2)
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.AtaqueS2(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C1,C5,screen) #para que vuelva a repetirse cada proceso.
+                Special(player2,player1)
+    
             elif A2 == 1 and A1 == 2:
-                Animaciones.AtaqueS1(player1,player2,a,b,c,d,corazon,corazon2,C2,C5,screen)
-                Basic1()
-                Animaciones.AtaqueS2(player1,player2,a,b,c,d,corazon,corazon2,C2,C5,screen)
-                Special2(player1,player2)
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
+                Animaciones.AtaqueS1(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C2,C5,screen)
+                Basic(player2)
+                Animaciones.AtaqueS2(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C2,C5,screen)
+                Special(player2,player1)
+            
             elif A2 == 1 and A1 == 3:
-                Animaciones.Defensa1(player1,player2,a,b,c,d,corazon,corazon2,C3,C5,screen)
-                Defence1()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
+                Animaciones.Defensa1(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C3,C5,screen)
+                Defence(player1)
+            
             elif A2 == 1 and A1 == 4:
-                Animaciones.AtaqueS2(player1,player2,a,b,c,d,corazon,corazon2,C4,C5,screen)
-                Special2(player1,player2)
+                Animaciones.AtaqueS2(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C4,C5,screen)
+                Special(player2,player1)
                 pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+            
             elif A2 == 2 and A1 == 1:
-                Animaciones.AtaqueS1(player1,player2,a,b,c,d,corazon,corazon2,C1,C6,screen)
-                Special1(player1,player2)
-                Animaciones.AtaqueS2(player1,player2,a,b,c,d,corazon,corazon2,C1,C6,screen)
-                Basic2()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.AtaqueS1(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C1,C6,screen)
+                Special(player1,player2)
+                Animaciones.AtaqueS2(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C1,C6,screen)
+                Basic(player1)                
+            
             elif A2 == 2 and A1 == 2:
-                Animaciones.AtaqueS1(player1,player2,a,b,c,d,corazon,corazon2,C2,C6,screen)
-                Basic1()
-                Animaciones.AtaqueS2(player1,player2,a,b,c,d,corazon,corazon2,C2,C6,screen)
-                Basic2()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.AtaqueS1(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C2,C6,screen)
+                Basic(player2)
+                Animaciones.AtaqueS2(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C2,C6,screen)
+                Basic(player1)
+            
             elif A2 == 2 and A1 == 3:
-                Animaciones.Defensa1(player1,player2,a,b,c,d,corazon,corazon2,C3,C6,screen)
-                Defence1()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.Defensa1(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C3,C6,screen)
+                Defence(player1)
+            
             elif A2 == 2 and A1 == 4:
-                Animaciones.AtaqueS2(player1,player2,a,b,c,d,corazon,corazon2,C4,C6,screen)
-                Basic2()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.AtaqueS2(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C4,C6,screen)
+                Basic(player1)
+            
             elif A2 == 3 and A1 == 1:
-                Animaciones.Defensa2(player1,player2,a,b,c,d,corazon,corazon2,C1,C7,screen)
-                Defence2()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.Defensa2(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C1,C7,screen)
+                Defence(player2)
+
             elif A2 == 3 and A1 == 2:
-                Animaciones.Defensa2(player1,player2,a,b,c,d,corazon,corazon2,C2,C7,screen)
-                Defence2()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.Defensa2(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C2,C7,screen)
+                Defence(player2)
+
             elif A2 == 3 and A1 == 3:
-                Animaciones.Defensa3(player1,player2,a,b,c,d,corazon,corazon2,C3,C7,screen)
-                Defence1()
-                Defence2()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.Defensa3(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C3,C7,screen)
+                Defence(player1)
+                Defence(player2)
+
             elif A2 == 3 and A1 == 4:
-                Animaciones.Defensa4(player1,player2,a,b,c,d,corazon,corazon2,C4,C7,A2,A1,screen)
-                Defence2()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.Defensa4(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C4,C7,A2,A1,screen)
+                Defence(player2)
+
             elif A2 == 4 and A1 == 1:
-                Animaciones.AtaqueS1(player1,player2,a,b,c,d,corazon,corazon2,C1,C8,screen)
-                Special1(player1,player2)
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.AtaqueS1(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C1,C8,screen)
+                Special(player1,player2)
+
             elif A2 == 4 and A1 == 2:
-                Animaciones.AtaqueS1(player1,player2,a,b,c,d,corazon,corazon2,C2,C8,screen)
-                Basic1()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
+                Animaciones.AtaqueS1(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C2,C8,screen)
+                Basic(player2)
                 
             elif A2 == 4 and A1 == 3:
-                Animaciones.Defensa4(player1,player2,a,b,c,d,corazon,corazon2,C3,C8, A2,A1,screen)
-                Defence1()
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
-                
+                Animaciones.Defensa4(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C3,C8, A2,A1,screen)
+                Defence(player1)
+
             elif A2 == 4 and A1 == 4:
                 num = random.randrange(1,8,1) #Genera el numero aleatorio para el chance time
-                ChanceTime(num)
+                ChanceTime(num,player1,player2)
                 Animaciones.ChanceTimeA(player1,player2,num,screen)
-                pelea = False
-                turno = True
-                A1 = None
-                A2 = None
 
+            pelea = False
+            turno = True
+            A1 = None
+            A2 = None
             
         pygame.display.update()
    
@@ -352,133 +280,51 @@ def battle(player1, player2, screen): #Se define la funcion que tiene todo el ju
                   
     while game_on == False:  #Pantalla final del juego, simplemente muestra "Game Over" y se sale del codigo cuando se oprime alguna de las opciones
         
-        Animaciones.finito(player1,player2,health,x2,screen)
+        Animaciones.finito(player1,player2,screen)
         
     pygame.quit()              
                      
  
     
-def Special1(player1,player2): #Función que retorna el resultado de vida del jugador 2 cuando el juegador 1 elije el ataque especial.
-        global x2
-         #Compara los atributos de ambos objetos 
-        if player1.attribute != player2.attribute: #De ser diferente utiliza alguna de las combinaciones para determinar el daño
-            if player1.attribute == "Pollo":
-                if player2.attribute == "Mago":
-                    x2 -= 50
-                    return x2
-                elif player2.attribute == "Espada":
-                    x2 -=25
-                    return x2
-            elif player1.attribute == "Mago":
-                if player2.attribute == "Espada":
-                    x2 -= 50
-                    return x2
-                elif player2.attribute == "Pollo":
-                    x2 -= 25
-                    return x2           
-            elif player1.attribute == "Espada":
-                if player2.attribute == "Pollo":
-                    x2 -= 50
-                    return x2
-                elif player2.attribute == "Mago":
-                    x2 -=25
-                    return x2
-        elif player1.attribute == player2.attribute: #De ser igual tambien genera daño, diferente a al¿¿las opciones anteriores
-            x2 -= 25
-            return x2
+def Special(player1,player2): #Función que retorna el resultado de vida del jugador 2 cuando el juegador 1 elije el ataque especial.
+        #Compara los atributos de ambos objetos 
+
+        if player1.attribute == player2.weakness:
+            player2.health -= 50
+        else:
+            player2.health -=25
           
 
    
-        
-def Special2(player1,player2): #Función que retorna el resultado de vida del jugador 1 cuando el juegador 2 elije el ataque especial.
-          global health
-           #Compara los atributos de ambos objetos 
-          if player2.attribute != player1.attribute:#De ser diferente utiliza alguna de las combinaciones para determinar el daño
-            if player2.attribute == "Pollo":
-                if player1.attribute == "Mago":
-                    health -= 50
-                    return health
-                elif player1.attribute == "Espada":
-                    health -=25
-                    return health
-            elif player2.attribute == "Mago":
-                if player1.attribute == "Espada":
-                    health -= 50
-                    return health
-                elif player1.attribute == "Pollo":
-                    health -= 25  
-                    return health                              
-            elif player2.attribute == "Espada":
-                if player1.attribute == "Pollo":
-                    health -= 50
-                    return health
-                elif player1.attribute == "Mago":
-                    health -=25
-                    return health
-          elif player2.attribute == player1.attribute:#De ser igual tambien genera daño, diferente a al¿¿las opciones anteriores
-                 health -= 25
-                 return health
-    
-    
-    
-    
+       
 #Funciones que retorna el resultado del daño cuando alguno de los personajes eljie el ataque básico     
-def Basic1(): 
-    global x2
-    x2 -= 37
-    return x2
-    
-def Basic2():
-    global health
-    health -= 37
-    return health    
-
+def Basic(player): 
+    player.health -= 37
+ 
 
 #Funciones que retorna el resultado del daño cuando alguno de los personajes eljie defensa  
-def Defence1():
-    global health
-    health += 0
-    return health
-
-def Defence2():
-    global x2
-    x2 += 0
-    return x2
-
-
-
+def Defence(player):
+    player.health += 0
 
 
 #Funciones que retorna un efecto aleatorio para alguno de los personajes 
 #recibe un numero aleatorio como argumento
-def ChanceTime(num):
-    global health,x2
-    if num ==1:
-        
-        if health > 380 and health <= 450:
-            health += 50
-            return health,num
-        elif health <= 380:
-            health += 120            
-            return health,num
-        
+def ChanceTime(num, player1,player2):    
+    if num ==1:   
+        if player1.health > 380 and player1.health <= 450:
+            player1.health += 50
+        elif player1.health <= 380:
+            player1.health += 120            
     elif num == 2:
-        x2 -= 120
-        return x2,num
-    
+        player2.health -= 120
     elif num == 5:
-        if x2 > 380 and x2 <= 450:
-            x2 += 50
-            return x2,num
-        elif x2 <= 380:
-            x2 += 120
-            return x2,num 
-        
+        if player2.health > 380 and player2.health <= 450:
+            player2.health += 50
+        elif player2.health <= 380:
+            player2.health += 120
     elif num == 6:
-        health -= 120
-        return health,num
+        player1.health -= 120
     
-    else:
-        return health,x2,num
+    return num
         
 

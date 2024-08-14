@@ -14,14 +14,12 @@ import Game
 from Character import Character  
 
 pygame.init()
-size = width,height = 1920,1080
-   
         
     
 #CLASES (TIPOS DE PERSONAJE)
-pollo = Character("Pollo", "IMAGENES/Seleccion_de_personajes/SPRITE_POLLO1.png")
-mago = Character("Mago","IMAGENES/Seleccion_de_personajes/SPRITE_MAGA3.png")
-espada = Character("Espada", "IMAGENES/Seleccion_de_personajes/SPRITE_ESPADA.png")
+pollo = Character("Pollo", "IMAGENES/Seleccion_de_personajes/SPRITE_POLLO1.png", "Espada")
+mago = Character("Mago","IMAGENES/Seleccion_de_personajes/SPRITE_MAGA3.png","Pollo")
+espada = Character("Espada", "IMAGENES/Seleccion_de_personajes/SPRITE_ESPADA.png","Mago")
 
 #MARCOS PARA ELEGIR PERSONAJE
 m_azul = pygame.image.load("IMAGENES/Seleccion_de_personajes/Marco_Azul.png")
@@ -30,6 +28,8 @@ m_azul_chs = pygame.image.load("IMAGENES/Seleccion_de_personajes/Marco_Azul_chs.
 m_verde = pygame.image.load("IMAGENES/Seleccion_de_personajes/Marco_verde.png")
 m_verde_chs = pygame.image.load("IMAGENES/Seleccion_de_personajes/Marco_verde_chs.png")
 
+
+#Character Sprites Scale
 pollo.sprite = pygame.transform.scale(pollo.sprite,(300,300))
 pollo.reversedSprite = pygame.transform.scale(pollo.reversedSprite,(300,300))
 

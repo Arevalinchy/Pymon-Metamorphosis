@@ -381,7 +381,7 @@ def ChanceTimeA(player1,player2,num, screen): #Recibe los objetos y un numero al
     
 
 #Pantalla final 
-def finito(player1,player2,x1,x2,screen): #Toma los objetos y sus valores de x de cada personaje
+def finito(player1,player2,screen): #Toma los objetos y sus valores de x de cada personaje
 
         pygame.mixer.Sound.play(congratulations)
 
@@ -395,11 +395,11 @@ def finito(player1,player2,x1,x2,screen): #Toma los objetos y sus valores de x d
         while ok:
                 y += 1
                 screen.blit(fondo_pelea, (0,0)) 
-                if x1 > x2:
+                if player1.health > player2.health:
                     screen.blit(player1.sprite,(860,440))
                     screen.blit(good1,(150,130))
                     
-                elif x1 < x2:
+                elif player1.health < player2.health:
                     screen.blit(player2.sprite,(860,440))  
                     screen.blit(good1,(150,130))
 
@@ -409,14 +409,14 @@ def finito(player1,player2,x1,x2,screen): #Toma los objetos y sus valores de x d
                     if event.type == QUIT:
                         pygame.quit()
                         sys.exit()
-                if event.type == KEYDOWN:
-                    if event.key == K_p:
-                        pygame.quit()
-                        sys.exit()
-                    elif event.key == K_ESCAPE:
-                        pygame.quit()
-                        sys.exit()
-                    
+                    if event.type == KEYDOWN:
+                        if event.key == K_p:
+                            pygame.quit()
+                            sys.exit()
+                        elif event.key == K_ESCAPE:
+                            pygame.quit()
+                            sys.exit()
+                        
                 pygame.display.update()
                 
         
