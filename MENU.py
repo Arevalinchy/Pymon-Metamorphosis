@@ -5,6 +5,9 @@ Created on Thu Oct 29 19:15:17 2020
 @author: Acer
 """
 
+from curses import KEY_DOWN
+from json.encoder import ESCAPE
+from termios import CQUIT
 import pygame, sys
 from pygame.locals import *
 import character_select
@@ -57,7 +60,7 @@ esc_sound = pygame.mixer.Sound("Sonidos/esc_sound.mp3")
 
 
 
-def menu_principal ():
+def menu_principal():
     click = False
     while True:
         
@@ -114,17 +117,17 @@ def menu_principal ():
             #PARA CERRAR
             if event.type == pygame.QUIT:
                 pygame.quit()
-                pygame.sys.exit()
+                sys.exit()
              
             #PARA VER SI SE CLICKEA    
             if event.type == pygame.MOUSEBUTTONDOWN:  
                 if event.button == 1:
                     click = True
                     
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+            if event.type == KEY_DOWN:
+                if event.key == ESCAPE:
                     pygame.quit()
-                    pygame.sys.exit()
+                    sys.exit()
 
         pygame.display.update()
 
@@ -226,7 +229,7 @@ def opciones():
         #EVENTOS
         for event in pygame.event.get():
             #PARA SALIR
-            if event.type == QUIT:
+            if event.type == CQUIT:
                 pygame.quit()
                 sys.exit()
                 
@@ -236,8 +239,8 @@ def opciones():
                     click = True
                     
             #para regresar al menu
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+            if event.type == KEY_DOWN:
+                if event.key == ESCAPE:
                     pygame.mixer.Sound.play(esc_sound)
                     running = False
                 
@@ -276,19 +279,20 @@ def extras():
         #EVENTOS
         for event in pygame.event.get():
             #PARA SALIR
-            if event.type == QUIT:
+            if event.type == CQUIT:
                 pygame.quit()
                 sys.exit()
             #para regresar al menu
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+            if event.type == KEY_DOWN:
+                if event.key == ESCAPE:
                     pygame.mixer.Sound.play(esc_sound)
                     running = False
                 
         pygame.display.update()  
 
-        
-        
+
+
+   
 menu_principal()        
         
 

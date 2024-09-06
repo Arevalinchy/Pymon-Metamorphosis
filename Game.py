@@ -4,38 +4,12 @@ Created on Mon Nov 23 18:37:46 2020
 
 @author: santi
 """
-import pygame, sys, Animaciones,random
-from pygame.locals import *
+from curses import KEY_DOWN
+from json.encoder import ESCAPE
+from termios import CQUIT
+import pygame, sys, Animaciones,random # type: ignore
+from pygame.locals import * # type: ignore
 pygame.init()
-
-def drawLifeBar():
-
-    LifeElments = list()
-    #Las variables a,b,c,d son las imágenes de la barra de vida, siendo a,c la parte de afuera 
-    #y b,d las que se modifican para ver la vida restante
-    barraVidaBackgroundP1 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_roja_1.png")
-    barraVidaBackgroundP1 = pygame.transform.scale(barraVidaBackgroundP1, (500, 100))
-    
-    barraVidaForegroundP1 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_verde_1.png")
-    
-    barraVidaBackgroundP2 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_roja_2.png")
-    barraVidaBackgroundP2 = pygame.transform.scale(barraVidaBackgroundP2, (500, 100))
-    
-    barraVidaForegroundP2 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Barra_vida_verde_2.png")
-    
-    corazon1 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Corazon_1.png")
-    corazon = pygame.transform.scale(corazon1, (500, 100))
-    corazon2 = pygame.transform.scale(corazon1, (500, 100))
-
-    LifeElments.append(barraVidaBackgroundP1)
-    LifeElments.append(barraVidaForegroundP1)
-
-    LifeElments.append(barraVidaBackgroundP2)
-    LifeElments.append(barraVidaForegroundP2)
-
-    return LifeElments 
-
-
 
 
 def battle(player1, player2, screen): #Se define la funcion que tiene todo el juego con dos argumentos de entrada
@@ -91,53 +65,51 @@ def battle(player1, player2, screen): #Se define la funcion que tiene todo el ju
     game_on = True
     
 
+    barraVidaBackgroundP1 = player1.lifeContainerSprite
+    barraVidaForegroundP1 = player1.lifeBarSprite
+    barraVidaBackgroundP2 = player2.lifeContainerSprite
+    barraVidaForegroundP2 = player2.lifeBarSprite
+            
+    corazon = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Corazon_1.png")
+    corazon2 = pygame.image.load("IMAGENES/Elementos_Juego_Prueba/Corazon_1.png")
     while game_on: 
+        
         #Eventos 
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == CQUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+            if event.type == KEY_DOWN:
+                if event.key == ESCAPE:
                     pygame.quit()
                     sys.exit()
                     
-        #Fin del juego     
-        #Se usan las variables globales x1 y x2 para determinar el fin del juego
-        #La primera x que sea menor o igual a 50 juega una animación final y acaba el juego               
-        if player1.health <= 100 or player2.health <= 100:
-            
+        #End of the game
+        # It takes players health to determine the state.                 
+        if player1.health <= 100 or player2.health <= 100: 
             game_on = False  
-            
-            
-        #Se ponen los "assets"  del juego, siendo las barras de vida y los personajes    
-        screen.blit(fondo_pelea, (0,0))        
+                  
+          
+        screen.blit(fondo_pelea, (0,0))  #Rendering background   
         
-        barraVidaForegroundP1 = pygame.transform.scale(barraVidaForegroundP1,(player1.health,100)) #Se usan las variables globales para determinar la escala en x
-        barraVidaForegroundP2 = pygame.transform.scale(barraVidaForegroundP2,(player2.health,100)) #Esta es la barra que decrece cada ves que alguno pierde vida 
-        
-        screen.blit(barraVidaBackgroundP1, (51,100)) #se muestran barras de vida 
-        screen.blit(barraVidaForegroundP1, (51,100))
-        screen.blit(barraVidaBackgroundP2, (1391,100))
-        screen.blit(barraVidaForegroundP2, (1391,100))
-        
-        screen.blit(corazon, (51,100))
-        screen.blit(corazon2, (1391,100))
-        
-        screen.blit(player1.sprite, (550, 370)) #Se muestran los jugadores
-        
-        screen.blit(player2.reversedSprite, (1340,360))
-        
+        barraVidaForegroundP1 = pygame.transform.scale(barraVidaForegroundP1,(player1.health,100)) #Esta es la barra que decrece cada ves que alguno pierde vida 
+        barraVidaForegroundP2 = pygame.transform.scale(barraVidaForegroundP2,(player2.health,100)) 
+                
+        #Renders Player 1 and its life bar       
+        screen.blits(((player1.sprite, (550, 370)) ,(barraVidaBackgroundP1, (51,100)),(barraVidaForegroundP1, (51,100)), (corazon, (51,100)) ))
+
+        #Renders Player 2 and its life bar
+        screen.blits(((player2.reversedSprite, (1340,360)), (barraVidaBackgroundP2, (1391,100)),(barraVidaForegroundP2, (1391,100)) , (corazon2, (1391,100))))
+    
         
         if turno: #Turno del jugador 1
         
             jugador1 = letra_jugadores.render("Turno del jugador 1", True, (255, 255, 255))
             screen.blit(jugador1, (25,25))
         
-            screen.blit(C1,(360,470))  #Se muestran opciones del jugador 1 
-            screen.blit(C2,(800,470))
-            screen.blit(C3,(360,650))
-            screen.blit(C4,(800,650))
+            #Renders all the P1's attacks
+            screen.blits(((C1,(360,470)), (C2,(800,470)), (C3,(360,650)),(C4,(800,650)) ))
+            
             
             #Eventos de jugador 1, el programa verifica si se ha oprimido alguna tecla 
             #Cuando elige cualquier opción, habilita el turno del siguiente jugador y asigna un valor a A1
@@ -162,11 +134,8 @@ def battle(player1, player2, screen): #Se define la funcion que tiene todo el ju
             jugador2 = letra_jugadores.render("Turno del jugador 2", True, (255, 255, 255))
             screen.blit(jugador2, (1350,25))
             
-            screen.blit(C5,(360,470))
-            screen.blit(C6,(800,470))
-            screen.blit(C7,(360,650))
-            screen.blit(C8,(800,650))
-            
+            #Renders all the P2's attacks
+            screen.blits(((C5,(360,470)), (C6,(800,470)), (C7,(360,650)),(C8,(800,650)) ))
              
             #Eventos de jugador 2, el programa verifica si se ha oprimido alguna tecla 
             #Cuando elige cualquier opción, habilita la animacion de ataque y asigna un valor a A2
@@ -182,17 +151,9 @@ def battle(player1, player2, screen): #Se define la funcion que tiene todo el ju
                         A2 = 4 
                     pygame.mixer.Sound.play(botton_ataque)
                     pelea = True
-                        
-         
-        
-            
-        if pelea:  #Se activa la animacion con los ataques (desiciones) de los jugadores 
-                   #A2 representan las aciones del jugador 2; A1 las del jugador. 
-                   #Cada condicional es 1 de las 16 combinaciones que se pueden elejir. 
-                   #Estan evauadas sobre el jugador 2, es decir, el primer bloque, por ejemplo,
-                   #cuando el jugador 2 elije a, se compara con las cuatro posibilidades que
-                   #tiene el jugador 1 para elejir
-        
+
+
+        if pelea: #Turno del jugador 2  
             if A2 == 1 and A1 == 1:
                 Animaciones.AtaqueS1(player1,player2,barraVidaBackgroundP1,barraVidaForegroundP1,barraVidaBackgroundP2,barraVidaForegroundP2,corazon,corazon2,C1,C5,screen) #Cada bloque es similar, invocan las funciones relacionadas
                 Special(player1,player2)                      #con las desiciones de cada jugado, luego se reinician cada variable
@@ -268,6 +229,7 @@ def battle(player1, player2, screen): #Se define la funcion que tiene todo el ju
                 num = random.randrange(1,8,1) #Genera el numero aleatorio para el chance time
                 ChanceTime(num,player1,player2)
                 Animaciones.ChanceTimeA(player1,player2,num,screen)
+            
 
             pelea = False
             turno = True
